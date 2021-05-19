@@ -1,21 +1,31 @@
-import java.util.Scanner;
-import java.util.concurrent.ExecutionException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class Launcher {
 
     public static void main(String[] args) {
         System.out.println("Welcome");
+
+        Collection<Command> commands = Arrays.asList(new Fibo(), new Freq(), new Quit());
+
         try (Scanner scanner = new Scanner(System.in)) {
             while (scanner.hasNext()) {
-                switch (scanner.nextLine()) {
-                    case "fibo" -> {
-                        System.out.println(fibo(scanner.nextInt()));
-                        scanner.nextLine();
-                    }
-                    case "quit" -> {
-                        return;
-                    }
-                    default -> System.err.println("Unknown command");
+
+                try {
+                    commands.stream()
+                            .filter(command -> command.name().equals(scanner.nextLine()))
+                            .findAny().orElseThrow(() -> new Exception("Unknown command"))
+                            .run(scanner);
+                }
+                catch (Exception e)
+                {
+                    System.err.println(e.getMessage());
                 }
             }
         } catch (Exception e) {
@@ -23,7 +33,5 @@ public class Launcher {
         }
     }
 
-    public static int fibo(int value) {
-        return (value == 0 || value == 1 )? value : (fibo(value - 1) + fibo(value - 2));
-    }
+
 }

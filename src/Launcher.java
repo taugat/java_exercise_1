@@ -9,23 +9,28 @@ import java.util.stream.Collectors;
 
 public class Launcher {
 
+    static Collection<Command> commands = Arrays.asList(new Fibo(), new Freq(), new Quit());
+
     public static void main(String[] args) {
         System.out.println("Welcome");
 
-        Collection<Command> commands = Arrays.asList(new Fibo(), new Freq(), new Quit());
-
         try (Scanner scanner = new Scanner(System.in)) {
 
+            while (scanner.hasNext()) {
 
-            while (true) {
-                String commandString = scanner.nextLine();
-                commands.stream()
-                        .filter(command -> command.name().equals(commandString))
-                        .findAny()
-                        .orElseThrow(() -> new Exception("Unknown command"))
-                        .run(scanner);
+                final String commandString = scanner.nextLine();
+
+                try {
+                    commands.stream()
+                            .filter(command -> command.name().equals(commandString))
+                            .findAny()
+                            .orElseThrow(() -> new Exception("Unknown command"))
+                            .run(scanner);
+                }
+                catch (Exception e) {
+                    System.err.println(e.getMessage());
+                }
             }
-
 
         } catch (Exception e) {
             System.err.println("Error : " + e.getMessage());
